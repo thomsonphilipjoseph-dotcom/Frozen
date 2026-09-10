@@ -1,0 +1,12 @@
+name: RFI Refresh
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test workflow
+        run: echo "RFI workflow is alive"
