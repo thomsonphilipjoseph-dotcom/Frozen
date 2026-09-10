@@ -132,8 +132,9 @@ function openEpisode(ep){
   currentEpisode=ep; state.currentEpisodeId=ep.id; saveState();
   $('#episode-list').classList.add('hidden'); $('#rfi-status').classList.add('hidden'); $('#lesson').classList.remove('hidden');
   $('#lesson-title').textContent=ep.title; $('#lesson-date').textContent=todayLabel(ep.pubDate);
-  $('#rfi-audio').src=ep.audioUrl||''; $('#episode-description').textContent=stripHtml(ep.description||'Open the RFI page for the transcript and episode details.');
-  $('#open-rfi').href=ep.transcriptUrl||ep.link||'https://francaisfacile.rfi.fr/fr/podcasts/journal-en-français-facile/';
+  const official = ep.officialUrl || ep.link || 'https://francaisfacile.rfi.fr/fr/podcasts/journal-en-francais-facile/';
+  $('#listen-on-rfi').href=official;
+  $('#open-rfi').href=official;
   const l=getLesson(); $('#listen-notes').value=l.listenNotes||''; $('#read-text').value=l.readText||''; $('#write-answer').value=l.writeAnswer||''; $('#speak-answer').value=l.speakAnswer||''; $('#lesson-exam-answer').value=l.examAnswer||'';
   showStage('listen'); markPractice();
 }
@@ -151,8 +152,12 @@ $('#save-read').addEventListener('click',()=>{getLesson().readText=$('#read-text
 
 function lessonContext(){
   const study=$('#read-text').value.trim();
-  const desc=stripHtml(currentEpisode?.description||'');
-  return `RFI TOPIC: ${currentEpisode?.title||''}\nRFI DESCRIPTION: ${desc}\nLEARNER STUDY TEXT/NOTES: ${study||'(none)'}`;
+  const listen=$('#listen-notes').value.trim();
+  return `SOURCE: RFI — Journal en français facile (external source; French Zero is not affiliated with RFI)
+EPISODE TITLE: ${currentEpisode?.title||''}
+LEARNER LISTENING NOTES: ${listen||'(none)'}
+LEARNER STUDY TEXT/NOTES: ${study||'(none)'}
+IMPORTANT: Do not invent or reproduce the RFI article/transcript. Base teaching only on the title and learner-supplied notes/text.`;
 }
 $('#generate-build').addEventListener('click',async e=>{
   const out=await askAI('Extract 5 high-value B1-B2 French structures from this RFI topic. For each: meaning in simple English, grammar pattern, two French variations, then one short drill prompt. Do not claim details not present.',lessonContext(),e.currentTarget);

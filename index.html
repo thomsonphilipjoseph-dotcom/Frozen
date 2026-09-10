@@ -69,6 +69,7 @@
           <div><div class="eyebrow">AUTHENTIC FRENCH</div><h2>RFI Daily</h2></div>
           <button id="refresh-rfi" class="ghost compact">↻ Refresh</button>
         </div>
+        <div class="notice soft">Independent study tool. RFI and “Journal en français facile” are third-party sources. French Zero is not affiliated with, endorsed by, or sponsored by RFI / France Médias Monde.</div>
         <div id="rfi-status" class="notice">Loading RFI episodes…</div>
         <div id="episode-list" class="episode-list"></div>
 
@@ -90,9 +91,10 @@
           </div>
 
           <div id="stage-listen" class="stage active card">
-            <div class="eyebrow">STEP 1 — NO TEXT</div>
-            <h3>Listen without reading</h3>
-            <audio id="rfi-audio" controls preload="metadata"></audio>
+            <div class="eyebrow">STEP 1 — LISTEN AT THE SOURCE</div>
+            <h3>Listen on the official RFI page</h3>
+            <div class="notice soft">French Zero does not copy, host, cache, or redistribute RFI audio. This button opens the official RFI episode. Listen there without reading first, then return here.</div>
+            <a id="listen-on-rfi" class="button primary" target="_blank" rel="noopener noreferrer">Open official RFI episode ↗</a>
             <label>What did you understand?</label>
             <textarea id="listen-notes" rows="5" placeholder="Write keywords or the main idea. French or English is fine."></textarea>
             <div class="row gap wrap">
@@ -104,13 +106,12 @@
           <div id="stage-read" class="stage card">
             <div class="eyebrow">STEP 2 — READ</div>
             <h3>Now check what you missed</h3>
-            <div id="episode-description" class="reading-box"></div>
-            <div class="notice soft">RFI provides the synchronized full transcript on the official episode page. Open it, read/listen there, then come back here. We do not republish their full transcript.</div>
+            <div class="notice soft">Read the transcript only on RFI's official page. French Zero does not fetch, store, display, or redistribute the RFI transcript, description, images, or audio.</div>
             <div class="row gap wrap">
               <a id="open-rfi" class="button primary" target="_blank" rel="noopener">Open official RFI transcript ↗</a>
               <button class="ghost" data-next-stage="build">Done reading → Build</button>
             </div>
-            <label>Optional: paste a short excerpt or your own notes for the AI lesson</label>
+            <label>Prefer your own notes. If you paste source text, use only a short excerpt needed for personal study</label>
             <textarea id="read-text" rows="7" placeholder="Paste only the part you want to study, or write your own notes."></textarea>
             <button id="save-read" class="ghost">Save study text</button>
           </div>
