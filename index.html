@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="French Zero" />
+  <title>French Zero — RFI + TCF/TEF</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">$0 FRENCH TRAINER</div>
+        <h1>French Zero</h1>
+      </div>
+      <div id="ai-pill" class="pill neutral">AI asleep</div>
+    </header>
+
+    <main>
+      <section id="view-home" class="view active">
+        <div class="hero card">
+          <span class="flag">🇫🇷</span>
+          <div>
+            <div class="eyebrow">DAILY SYSTEM</div>
+            <h2>Listen → Read → Build → Write → Speak → TCF/TEF</h2>
+            <p>Authentic RFI French, local AI coaching, and exam practice in one loop.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <button class="action-card" data-go="rfi">
+            <span class="icon">📰</span><strong>RFI Daily</strong><small>Start today’s lesson</small>
+          </button>
+          <button class="action-card" data-go="live">
+            <span class="icon">🗣️</span><strong>Live Coach</strong><small>Real conversation cues</small>
+          </button>
+          <button class="action-card" data-go="exam">
+            <span class="icon">🎯</span><strong>TCF / TEF</strong><small>Strict speaking simulation</small>
+          </button>
+          <button class="action-card" data-go="progress">
+            <span class="icon">📈</span><strong>Progress</strong><small>Vocabulary + mistakes</small>
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="row between gap">
+            <div>
+              <div class="eyebrow">LOCAL AI</div>
+              <h3>Qwen3 tutor</h3>
+              <p class="muted">Runs in your browser with WebGPU. No API key and no per-message fee. The first AI use downloads the model.</p>
+            </div>
+            <button id="wake-ai" class="primary compact">Wake AI</button>
+          </div>
+          <div id="ai-progress-wrap" class="hidden">
+            <div class="progress"><div id="ai-progress-bar"></div></div>
+            <small id="ai-progress-text">Preparing…</small>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-rfi" class="view">
+        <div class="section-title">
+          <div><div class="eyebrow">AUTHENTIC FRENCH</div><h2>RFI Daily</h2></div>
+          <button id="refresh-rfi" class="ghost compact">↻ Refresh</button>
+        </div>
+        <div id="rfi-status" class="notice">Loading RFI episodes…</div>
+        <div id="episode-list" class="episode-list"></div>
+
+        <div id="lesson" class="hidden">
+          <div class="card lesson-head">
+            <button id="back-episodes" class="ghost compact">← Episodes</button>
+            <div class="eyebrow">SELECTED EPISODE</div>
+            <h3 id="lesson-title"></h3>
+            <small id="lesson-date" class="muted"></small>
+          </div>
+
+          <div class="stage-tabs" id="stage-tabs">
+            <button data-stage="listen" class="active">🎧 Listen</button>
+            <button data-stage="read">📖 Read</button>
+            <button data-stage="build">🧠 Build</button>
+            <button data-stage="write">✍️ Write</button>
+            <button data-stage="speak">🎙️ Speak</button>
+            <button data-stage="exam">🎯 Exam</button>
+          </div>
+
+          <div id="stage-listen" class="stage active card">
+            <div class="eyebrow">STEP 1 — NO TEXT</div>
+            <h3>Listen without reading</h3>
+            <audio id="rfi-audio" controls preload="metadata"></audio>
+            <label>What did you understand?</label>
+            <textarea id="listen-notes" rows="5" placeholder="Write keywords or the main idea. French or English is fine."></textarea>
+            <div class="row gap wrap">
+              <button class="primary" data-next-stage="read">I listened → Read</button>
+              <button id="save-listen" class="ghost">Save notes</button>
+            </div>
+          </div>
+
+          <div id="stage-read" class="stage card">
+            <div class="eyebrow">STEP 2 — READ</div>
+            <h3>Now check what you missed</h3>
+            <div id="episode-description" class="reading-box"></div>
+            <div class="notice soft">RFI provides the synchronized full transcript on the official episode page. Open it, read/listen there, then come back here. We do not republish their full transcript.</div>
+            <div class="row gap wrap">
+              <a id="open-rfi" class="button primary" target="_blank" rel="noopener">Open official RFI transcript ↗</a>
+              <button class="ghost" data-next-stage="build">Done reading → Build</button>
+            </div>
+            <label>Optional: paste a short excerpt or your own notes for the AI lesson</label>
+            <textarea id="read-text" rows="7" placeholder="Paste only the part you want to study, or write your own notes."></textarea>
+            <button id="save-read" class="ghost">Save study text</button>
+          </div>
+
+          <div id="stage-build" class="stage card">
+            <div class="eyebrow">STEP 3 — FLUENZ-STYLE BUILD</div>
+            <h3>Turn the topic into reusable French</h3>
+            <p class="muted">The tutor extracts useful B1–B2 structures, explains them simply in English, and creates variations.</p>
+            <button id="generate-build" class="primary">Generate today’s structures</button>
+            <div id="build-output" class="ai-output empty">Your lesson will appear here.</div>
+            <div class="row gap wrap"><button class="ghost" data-next-stage="write">Continue → Write</button></div>
+          </div>
+
+          <div id="stage-write" class="stage card">
+            <div class="eyebrow">STEP 4 — WRITE</div>
+            <h3>Summarize it from memory</h3>
+            <p>Write 5–8 sentences in French. Include your opinion if you can.</p>
+            <textarea id="write-answer" rows="9" placeholder="À mon avis…"></textarea>
+            <button id="correct-writing" class="primary">Correct my writing</button>
+            <div id="write-output" class="ai-output empty">Correction will appear here.</div>
+            <div class="row gap wrap"><button class="ghost" data-next-stage="speak">Continue → Speak</button></div>
+          </div>
+
+          <div id="stage-speak" class="stage card">
+            <div class="eyebrow">STEP 5 — SPEAK</div>
+            <h3>Explain it without looking</h3>
+            <p class="muted">Aim for 60–90 seconds. Speech recognition is used when your browser supports it.</p>
+            <div class="row gap wrap">
+              <button class="primary mic" data-speech-target="speak-answer">🎙 Start speaking</button>
+              <button class="ghost" id="clear-speak">Clear</button>
+            </div>
+            <textarea id="speak-answer" rows="8" placeholder="Your speech transcript appears here. You can also type."></textarea>
+            <button id="correct-speaking" class="primary">Correct after I finish</button>
+            <div id="speak-output" class="ai-output empty">Speaking feedback will appear here.</div>
+            <div class="row gap wrap"><button class="ghost" data-next-stage="exam">Continue → Exam</button></div>
+          </div>
+
+          <div id="stage-exam" class="stage card">
+            <div class="eyebrow">STEP 6 — TCF / TEF REUSE</div>
+            <h3>Turn today’s topic into exam French</h3>
+            <button id="generate-exam" class="primary">Generate exam question</button>
+            <div id="lesson-exam-question" class="question-box">Your question will appear here.</div>
+            <textarea id="lesson-exam-answer" rows="9" placeholder="Speak with the microphone or type your answer."></textarea>
+            <div class="row gap wrap">
+              <button class="ghost mic" data-speech-target="lesson-exam-answer">🎙 Speak</button>
+              <button id="finish-lesson-exam" class="primary">I’m finished — evaluate</button>
+            </div>
+            <div id="lesson-exam-output" class="ai-output empty">No corrections until you press “I’m finished”.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-live" class="view">
+        <div class="section-title"><div><div class="eyebrow">BINGO-STYLE</div><h2>Live Coach</h2></div></div>
+        <div class="card">
+          <h3>Who starts?</h3>
+          <div class="segmented" id="starter">
+            <button data-starter="them" class="active">THEM starts</button>
+            <button data-starter="me">I start</button>
+          </div>
+          <div class="row gap wrap top-gap">
+            <button id="reverse-speaker" class="ghost">⇄ Reverse</button>
+            <button id="fix-last-speaker" class="ghost">Fix last speaker</button>
+            <button id="clear-live" class="danger ghost">Clear</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row between"><h3>Conversation</h3><span id="expected-speaker" class="pill">Waiting for THEM</span></div>
+          <div id="live-turns" class="turns"></div>
+          <textarea id="live-input" rows="4" placeholder="Capture what the current speaker said…"></textarea>
+          <div class="row gap wrap">
+            <button class="ghost mic" data-speech-target="live-input">🎙 Listen</button>
+            <button id="add-live-turn" class="primary">Add turn</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">YOUR CUE</div>
+          <p class="muted">When it is your turn, the AI gives a brief meaning + the first five words of a natural reply. It does not correct you mid-conversation.</p>
+          <button id="live-cue" class="primary">Give me the cue</button>
+          <div id="live-cue-output" class="ai-output empty">Cue appears here.</div>
+          <button id="finish-live" class="ghost top-gap">Conversation finished — correct everything</button>
+          <div id="live-correction" class="ai-output empty">Corrections appear only when the conversation is finished.</div>
+        </div>
+      </section>
+
+      <section id="view-exam" class="view">
+        <div class="section-title"><div><div class="eyebrow">STRICT MODE</div><h2>TCF / TEF Speaking</h2></div></div>
+        <div class="card">
+          <div class="segmented" id="exam-task">
+            <button data-task="t2" class="active">Tâche 2</button>
+            <button data-task="t3">Tâche 3</button>
+          </div>
+          <button id="new-exam-topic" class="primary top-gap">New topic</button>
+          <div id="exam-question" class="question-box">Press “New topic”.</div>
+          <div class="notice soft">Simulation rule: no corrections or rescue while you are speaking. Feedback appears only after “I’m finished”.</div>
+          <textarea id="exam-answer" rows="10" placeholder="Use the microphone or type a transcript of your answer."></textarea>
+          <div class="row gap wrap">
+            <button class="ghost mic" data-speech-target="exam-answer">🎙 Speak</button>
+            <button id="finish-exam" class="primary">I’m finished</button>
+          </div>
+          <div id="exam-output" class="ai-output empty">Your line-by-line correction and approximate B2/TCF assessment will appear here.</div>
+        </div>
+      </section>
+
+      <section id="view-progress" class="view">
+        <div class="section-title"><div><div class="eyebrow">LOCAL ONLY</div><h2>Progress</h2></div></div>
+        <div class="grid two stats">
+          <div class="card"><strong id="stat-lessons">0</strong><span>Lessons</span></div>
+          <div class="card"><strong id="stat-vocab">0</strong><span>Saved phrases</span></div>
+          <div class="card"><strong id="stat-mistakes">0</strong><span>Corrections saved</span></div>
+          <div class="card"><strong id="stat-streak">0</strong><span>Practice days</span></div>
+        </div>
+        <div class="card"><h3>Saved vocabulary / structures</h3><textarea id="vocab-store" rows="8" placeholder="Add your own phrases here, one per line."></textarea><button id="save-vocab" class="primary">Save</button></div>
+        <div class="card"><h3>Correction history</h3><div id="mistake-history" class="history"></div></div>
+        <div class="card"><h3>Data</h3><p class="muted">Stored on this device only.</p><div class="row gap wrap"><button id="export-data" class="ghost">Export JSON</button><button id="reset-data" class="danger ghost">Reset local data</button></div></div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button data-go="home" class="active"><span>⌂</span><small>Home</small></button>
+      <button data-go="rfi"><span>📰</span><small>RFI</small></button>
+      <button data-go="live"><span>🗣</span><small>Live</small></button>
+      <button data-go="exam"><span>🎯</span><small>Exam</small></button>
+      <button data-go="progress"><span>◎</span><small>Progress</small></button>
+    </nav>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

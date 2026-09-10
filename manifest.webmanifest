@@ -1,0 +1,13 @@
+{
+  "name": "French Zero — RFI + TCF/TEF",
+  "short_name": "French Zero",
+  "description": "Zero-cost French learning with RFI, local AI, and TCF/TEF practice.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07101e",
+  "theme_color": "#07101e",
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
