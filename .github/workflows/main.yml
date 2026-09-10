@@ -1,0 +1,33 @@
+name: Update RFI episodes
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 12 * * 1-5"
+
+permissions:
+  contents: write
+
+jobs:
+  update-rfi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get French Zero
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Fetch RFI episode metadata
+        run: python scripts/update_rfi.py
+
+      - name: Save updated episodes
+        run: |
+          git config user.name "French Zero"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/rfi.json
+          git diff --cached --quiet || git commit -m "Update RFI episode metadata"
+          git push
